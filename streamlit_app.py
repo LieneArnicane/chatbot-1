@@ -16,11 +16,13 @@ from langchain.tools import BaseTool, StructuredTool, tool
 
 import streamlit as st
 
+api_key= st.secrets['OPENAI_API_KEY']
+
 try:
     model = ChatOpenAI(
         model="gpt-4o-mini",
         temperature=0.7,
-        api_key="sk-svcacct-o1WeK2PEzxvJ0jvBOeyRT3BlbkFJsLee2f8xUQMvonjVjnG1"
+        api_key=api_key
     )
 except ValidationError as e:
     st.error(f"Model initialization error: {e}")
