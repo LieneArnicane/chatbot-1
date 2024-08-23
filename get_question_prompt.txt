@@ -1,0 +1,90 @@
+##Instructions
+You need to generate a list of yes or no good questions that a recruiter might use to search LinkedIn profile data for suitable candidates based on a given job description, using the guidelines below.  These questions should be straightforward and answerable with a simple "yes" or "no." A good question is very precise, not about soft skills. The questions should cover various aspects such as skills, experience, certifications, and education, derived directly from the job description. 
+###Guidelines:
+
+- Each skill should be a separate question.
+- Do not ask about the number of years of experience in a skill, as LinkedIn data may not provide this information.
+- Ensure questions can be answered using visible LinkedIn data, that includes name, summary, education, experience, languages, location, skills, certifications, and publications. The questions could include the company data: which includes a company overview, website link, industry, year founded, company size, and specialties.
+- Avoid making suggestions or leaps of logic when writing the questions; stick strictly to the job description.
+- Divide the questions into two categories: crucial (requirements for the job) and nice to have (soft skills and additional information).
+- Limit the total number of questions to a maximum of 20.
+- Please follow these instructions carefully to create an effective and efficient set of questions for identifying suitable candidates on LinkedIn.
+- Besides the question write an explanation of why the question is included and why constructed in such a way. 
+
+Here are a few examples of how to structure the questions to guide you:
+
+###Examples
+Are they currently a POSITION TITLE?
+Do they have experience with TECHNOLOGY OR SKILL like EXAMPLES?
+Do they have AT LEAST 3 YEARS OF experience in TECHNOLOGY OR SKILL?
+Have they held a SENIOR / JUNIOR position in their most recent job?
+Are they primarily a SPECIFIC PROFESSION TYPE?
+Does their profile specifically mention experience with TECHNOLOGY OR SKILL?
+Do they have SKILLS?
+Are they proficient in using TOOLS?
+Does their profile specifically mention SKILLS?
+Do they have MORE THAN / LESS THAN X YEARS OF EXPERIENCE in total?
+Do they have background in INDUSTRY?
+Do they have MORE THAN / LESS THAN X MONTHS OF FULL-TIME experience in INDUSTRY?
+Do they have experience being employed as POSITION TITLE?
+Do they have experience as a FOUNDER?
+Do they have experience in SKILL, including SPECIFICS?
+Do they have experience in SOFT SKILL in FUNCTION?
+Are they a CAREER LEVEL candidate?
+Have they MANAGED WHAT?
+Do they describe themselves as WHAT?
+
+Do they have a GENDER name?
+Do they have a NATIONALITY first or last name?
+Are they originally from LOCATION?
+Have they lived in LOCATION?
+Have they lived outside of LOCATION?
+Are they currently residing in LOCATION?
+Is their current workplace WITHIN X DISTANCE FROM LOCATION?
+Do they represent themselves as MEMBER OF GROUP?
+Do they have LANGUAGE SKILL mentioned on their profile?
+Have they studied in LOCATION?
+Have they finished their studies in LOCATION?
+Do they speak NUMBER of languages?
+
+Are they still studying?
+Do they have a DEGREE OR ABOVE?
+Do they have a DEGREE in FIELD?
+Have they studied at a TOP university in LOCATION?
+Did this person get their last degree WHEN?
+Have they studied in LOCATION?
+
+Do they have experience in SPECIFIC INDUSTRY?
+Have they held a position in ROLE OR AREA?
+Do they have experience working in COMPANY TYPE?
+Have they been involved in SPECIFIC FUNCTION?
+Have they worked at a company that SPECIFIC CRITERIA?
+Are they currently employed at a company that SPECIFIC CRITERIA?
+Are they currently employed in INDUSTRY?
+Have they ever worked at SPECIFIC COMPANIES?
+Is this person a CERTIFIED PROFESSION?
+Have they worked with COMPANY OR PEOPLE TYPE?
+
+Do they list SPECIFIC TRAITS on their profile?
+Does their profile include INFORMATION?
+Do they have NUMBER of connections?
+
+Have they changed positions within the last TIME FRAME?
+Have they experienced growth in their career within TIME FRAME?
+Do they have a history of staying at companies for DURATION?
+Have they been employed at their current company for DURATION?
+Have they been employed on-site in multiple countries?
+Have they ever worked remotely?
+Have they ever switched careers from a field that's not related to tech to tech?
+
+Are they currently a freelancer?
+Are they a business owner?
+Are they currently a founder?
+Have they ever founded a company?
+Are they currently a founder of COMPANY SPECIFICS?
+
+Does this person's experience fit what a private equity firm may want to see in an Investment Analyst's skillset?
+Does this profile fit for a role as a risk analyst at an insurance company?
+
+##Additional instructions
+Please provide additional questions similar to these, based on the given job description. Do NOT write in caps lock.
