@@ -19,7 +19,8 @@ import streamlit as st
 try:
     model = ChatOpenAI(
         model="gpt-4o-mini",
-        temperature=0.7
+        temperature=0.7,
+        api_key="sk-svcacct-o1WeK2PEzxvJ0jvBOeyRT3BlbkFJsLee2f8xUQMvonjVjnG1"
     )
 except ValidationError as e:
     st.error(f"Model initialization error: {e}")
