@@ -1,56 +1,136 @@
-import streamlit as st
-from openai import OpenAI
+from os import name
+from dotenv import load_dotenv
+from langchain_core.messages.base import BaseMessage
+from langchain_core.vectorstores.base import VectorStore
+from pydantic.v1.errors import EnumMemberError
 
-# Show title and description.
-st.title("💬 Chatbot")
-st.write(
-    "This is a simple chatbot that uses OpenAI's GPT-3.5 model to generate responses. "
-    "To use this app, you need to provide an OpenAI API key, which you can get [here](https://platform.openai.com/account/api-keys). "
-    "You can also learn how to build this app step by step by [following our tutorial](https://docs.streamlit.io/develop/tutorials/llms/build-conversational-apps)."
+load_dotenv()
+
+from langchain_openai import ChatOpenAI
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+from langchain.agents import create_openai_functions_agent, AgentExecutor
+from langchain_community.tools.tavily_search import  TavilySearchResults
+from langchain_core.messages import HumanMessage, AIMessage
+from langchain.pydantic_v1 import BaseModel, Field
+from langchain.tools import BaseTool, StructuredTool, tool
+
+import streamlit as st
+
+model = ChatOpenAI(
+  model="gpt-4o-mini",
+  temperature=0.7
 )
 
-# Ask user for their OpenAI API key via `st.text_input`.
-# Alternatively, you can store the API key in `./.streamlit/secrets.toml` and access it
-# via `st.secrets`, see https://docs.streamlit.io/develop/concepts/connections/secrets-management
-openai_api_key = st.text_input("OpenAI API Key", type="password")
-if not openai_api_key:
-    st.info("Please add your OpenAI API key to continue.", icon="🗝️")
-else:
 
-    # Create an OpenAI client.
-    client = OpenAI(api_key=openai_api_key)
+search = TavilySearchResults()
 
-    # Create a session state variable to store the chat messages. This ensures that the
-    # messages persist across reruns.
-    if "messages" not in st.session_state:
-        st.session_state.messages = []
+def save(tool_input: str):
+  with open("job_description.txt", "w") as file:
+    file.write(tool_input)
+    
+  st.session_state.job_description = tool_input
 
-    # Display the existing chat messages via `st.chat_message`.
-    for message in st.session_state.messages:
-        with st.chat_message(message["role"]):
-            st.markdown(message["content"])
+  return "Saved the given text in google sheets: " + tool_input
 
-    # Create a chat input field to allow the user to enter a message. This will display
-    # automatically at the bottom of the page.
-    if prompt := st.chat_input("What is up?"):
+def get_questions(tool_input: str) -> str:
+  job_description = st.session_state.job_description_window
+  with open("get_question_prompt.txt", "r") as file:
+    get_question_prompt = file.read()
+  prompt = ChatPromptTemplate.from_messages(
+    [
+      ("system", get_question_prompt),
+      ("human", "{input}")
+    ]
+  )
 
-        # Store and display the current prompt.
-        st.session_state.messages.append({"role": "user", "content": prompt})
-        with st.chat_message("user"):
-            st.markdown(prompt)
+  chain = prompt | model
+  response = chain.invoke({"input": job_description})
+  print(type(response))
+  st.session_state.questions = response.content
+  return response.content
 
-        # Generate a response using the OpenAI API.
-        stream = client.chat.completions.create(
-            model="gpt-3.5-turbo",
-            messages=[
-                {"role": m["role"], "content": m["content"]}
-                for m in st.session_state.messages
-            ],
-            stream=True,
-        )
 
-        # Stream the response to the chat using `st.write_stream`, then store it in 
-        # session state.
-        with st.chat_message("assistant"):
-            response = st.write_stream(stream)
-        st.session_state.messages.append({"role": "assistant", "content": response})
+save_tool = StructuredTool.from_function(
+  func=save, 
+  name="Save", 
+  description="Use this tool when the user needs save the job description text in the database"
+)
+
+get_questions_tool = StructuredTool.from_function(
+  func=get_questions,
+  name="Get_questions", 
+  description="Use this tool when the user asks for the questions."
+)
+
+
+# here starts the GPT code
+
+tools = [search, save_tool, get_questions_tool]
+
+prompt = ChatPromptTemplate.from_messages([
+    ("system", """"You are an experienced recruiter. I am a client looking to hire a new team member. Your task is to gather all the necessary details to create a comprehensive job description. You should ask questions one by one, covering all relevant aspects such as job title, responsibilities, required skills, experience, qualifications, and any other important details, like information about the company. Ask about why the job is desirable - selling points. Ask about benefits. If the answers are not satisfactory then ask persistently in different ways. Only if the user writes to continue, then let it go. After you have asked all the necessary questions, compile the information and create a job description, including sections for the job title, job summary, responsibilities, qualifications, required skills, experience, and any other relevant information. Answer shortly and ask the questions one by one. Continuesly analyse the given answers to understand if the given information is enough. The job description should include: job summary, offer, perks and benefits, 'our pitch', position key duties,  if about a tech job - tech stack, otherwise necessary skills, requirements - your capabilities, track record, extra credit, team, hiring process, selection process, location.
+
+Do NOT include any information that the user has not given. 
+
+After you have given the job description (in the chat give the job description in text format) ask if the client is satisfied. If not - ask why and redo the job description. If yes, then save the job description with the tool 'save'. After ask if the client wants to get questions for candidate search on HyperScan, based on the job description. If yes, then use the tool get_questions and give the questions to the user."""),  # Truncated for readability
+    MessagesPlaceholder(variable_name="chat_history"),
+    ("human", "{input}"),
+    MessagesPlaceholder(variable_name="agent_scratchpad")
+])
+
+agent = create_openai_functions_agent(llm=model, prompt=prompt, tools=tools)
+agent_executor = AgentExecutor(agent=agent, tools=tools)
+
+# Create a session state variable to store the chat messages
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+if "job_description" not in st.session_state:
+    st.session_state.job_description = "Job description will appear here."
+if "questions" not in st.session_state:
+    st.session_state.questions = "Questions will appear here."
+
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+
+# Display the existing chat messages via `st.chat_message`
+for message in st.session_state.messages:
+    with st.chat_message(message["role"]):
+        st.markdown(message["content"])
+
+# Create a chat input field for user prompts
+if prompt := st.chat_input("Write here!"):
+    # Store and display the user prompt
+    st.session_state.messages.append({"role": "user", "content": prompt})
+    with st.chat_message("user"):
+        st.markdown(prompt)
+
+    # Process the response using the LangChain agent
+    response = agent_executor.invoke({"input": prompt, "chat_history": st.session_state.messages})
+
+    # Store and display the assistant's response
+    st.session_state.messages.append({"role": "assistant", "content": response["output"]})
+    with st.chat_message("assistant"):
+        st.markdown(response["output"])
+
+
+def update_job_description():
+    st.session_state.job_description = st.session_state.job_description_window
+    # with open("job_description.txt", "w") as file:
+    #     file.write(st.session_state.job_description_window)
+
+with st.sidebar:
+    st.header("Job Description")
+    with open("job_description.txt", "r") as file:
+        st.session_state.job_description = file.read()
+    st.text_area("Generated Job Description", 
+         value=st.session_state.job_description, 
+         height=300, 
+         key="job_description_window", 
+         on_change=update_job_description)
+    st.header("Candidate Questions")
+    if st.button("Get Questions"):
+        st.session_state.questions = get_questions(st.session_state.job_description)
+    st.text_area("Generated Questions", value=st.session_state.questions, height=300, key="questions_window")
+
+    # Get Questions Button
+    
