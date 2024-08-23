@@ -80,14 +80,11 @@ except ValidationError as e:
 # here starts the GPT code
 
 tools = [search, save_tool, get_questions_tool]
-
+with open("prompt.txt", "r") as file:
+  system_prompt = file.read()
 try:
     prompt = ChatPromptTemplate.from_messages([
-        ("system", """"You are an experienced recruiter. I am a client looking to hire a new team member. Your task is to gather all the necessary details to create a comprehensive job description. You should ask questions one by one, covering all relevant aspects such as job title, responsibilities, required skills, experience, qualifications, and any other important details, like information about the company. Ask about why the job is desirable - selling points. Ask about benefits. If the answers are not satisfactory then ask persistently in different ways. Only if the user writes to continue, then let it go. After you have asked all the necessary questions, compile the information and create a job description, including sections for the job title, job summary, responsibilities, qualifications, required skills, experience, and any other relevant information. Answer shortly and ask the questions one by one. Continuesly analyse the given answers to understand if the given information is enough. The job description should include: job summary, offer, perks and benefits, 'our pitch', position key duties,  if about a tech job - tech stack, otherwise necessary skills, requirements - your capabilities, track record, extra credit, team, hiring process, selection process, location.
-
-Do NOT include any information that the user has not given. 
-
-After you have given the job description (in the chat give the job description in text format) ask if the client is satisfied. If not - ask why and redo the job description. If yes, then save the job description with the tool 'save'. After ask if the client wants to get questions for candidate search on HyperScan, based on the job description. If yes, then use the tool get_questions and give the questions to the user."""),  # Truncated for readability
+        ("system", system_prompt),  # Truncated for readability
         MessagesPlaceholder(variable_name="chat_history"),
         ("human", "{input}"),
         MessagesPlaceholder(variable_name="agent_scratchpad")
