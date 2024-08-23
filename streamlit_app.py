@@ -32,8 +32,6 @@ search = TavilySearchResults()
 
 def save(tool_input: str):
     try:
-        with open("job_description.txt", "w") as file:
-            file.write(tool_input)
 
         st.session_state.job_description = tool_input
         return "Saved the given text in Google Sheets: " + tool_input
@@ -143,8 +141,6 @@ def update_job_description():
 with st.sidebar:
     st.header("Job Description")
     try:
-        with open("job_description.txt", "r") as file:
-            st.session_state.job_description = file.read()
         st.text_area("Generated Job Description", 
             value=st.session_state.job_description, 
             height=300, 
